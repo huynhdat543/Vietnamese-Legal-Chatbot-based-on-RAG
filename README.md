@@ -14,7 +14,7 @@ This project focuses on researching and developing an automated question-answeri
 
 ## **🛠️ Arichitecture System**
 
-![architecture](img_readme\architecture.png)
+![architecture](img_readme/architecture.png)
 
 The system development process is divided into five main phases
 ### 1. System Architecture Overview
