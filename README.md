@@ -7,6 +7,9 @@ This project focuses on researching and developing an automated question-answeri
 - Bùi Quốc Bảo - ISE-UIT
 - Lê Minh Khôi - ISE-UIT
 
+## **Video demo**
+Link : https://youtu.be/sArTNMoD1Dk
+
 ## **📖 Data**
 - [ViNLI_Zalo](https://huggingface.co/datasets/anti-ai/ViNLI-Zalo-supervised) dataset: Provides a structure including query, positive, and hard_neg. This is the primary data source for refining the Rerank model (sorting results) and the Extract/MRC model (extracting short answers).
 - [thangvip/legal-documents-splitted](https://huggingface.co/datasets/thangvip/legal-documents-splitted) dataset: A collection of pre-processed and chunked legal documents (laws, decrees, circulars). This source is used to refine the Embedding model, enhancing the ability to represent legal semantics.
