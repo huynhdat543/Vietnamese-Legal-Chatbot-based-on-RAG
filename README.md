@@ -53,7 +53,7 @@ The system development process is divided into five main phases
 - Objective: Enhance the accuracy of embeddings for the Vietnamese legal domain.
 - Data Preparation: Using the anti-ai/ViNLI-Zalo-supervised dataset, has a triplet include question, positive, hard_neg
 - Setup: Architecture: Bi-encoder based on intfloat/multilingual-e5-base
-- Results: Achieved results on Zalo-Legal-Final-Check datasets with NDCG@10: 0,6066 and MRR@10: 0.6377
+- Results: Achieved results on Zalo-Legal-Final-Check datasets with NDCG@10: 0,6106 and MRR@10: 0.5499
 
 ### 2. Rerank Model Refinement
 - Objective: Improve accuracy by clearly distinguishing between text that matches and does not match the query.
