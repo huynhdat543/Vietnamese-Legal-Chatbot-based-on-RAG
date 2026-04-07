@@ -13,7 +13,7 @@ def load_chroma_db(
     global VECTOR_DB
 
     embeddings_model = HuggingFaceEmbeddings(
-        model_name="bkai-foundation-models/vietnamese-bi-encoder",
+        model_name="bqbbao6/VN_legal_embedding_512",
         model_kwargs={"device": device},
         encode_kwargs={"normalize_embeddings": True},
     )

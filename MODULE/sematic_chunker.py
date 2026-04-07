@@ -2,7 +2,7 @@ from langchain_experimental.text_splitter import SemanticChunker
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
 def create_embedding_model(
-    model_name: str = "bkai-foundation-models/vietnamese-bi-encoder",
+    model_name: str = "bqbbao6/VN_legal_embedding_512",
     device: str = "cuda",
     normalize: bool = True
 ):
