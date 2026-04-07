@@ -49,11 +49,11 @@ The system development process is divided into five main phases
 - This multi-layered process helps the system provide well-founded answers while optimizing operating costs by minimizing unnecessary contextual tokens.
 
 ## **📊 Experiment**
-### 1. Embedding Model
-- Model Selection: Using bkai-foundation-models/vietnamese-bi-encoder (developed by BKAI - Hanoi University of Science and Technology).
-- Architectural Advantages: Refined from PhoBERT v2, optimized for understanding the specific grammar and semantics of Vietnamese.
-- Training on large datasets: MS MARCO, SQuAD v2 (Vietnamese localization), and especially ViNLI_Zalo.
-- Performance: Achieved impressive experimental results on rule datasets with Accuracy@1: 73.28% and Accuracy@10: 93.59%.
+### 1. Embedding Model Refinement
+- Objective: Enhance the accuracy of embeddings for the Vietnamese legal domain.
+- Data Preparation: Using the anti-ai/ViNLI-Zalo-supervised dataset, has a triplet include question, positive, hard_neg
+- Setup: Architecture: Bi-encoder based on intfloat/multilingual-e5-base
+- Results: Achieved results on Zalo-Legal-Final-Check datasets with NDCG@10: 0,6066 and MRR@10: 0.6377
 
 ### 2. Rerank Model Refinement
 - Objective: Improve accuracy by clearly distinguishing between text that matches and does not match the query.
