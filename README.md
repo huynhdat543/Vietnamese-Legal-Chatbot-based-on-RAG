@@ -17,7 +17,7 @@ Link : https://youtu.be/sArTNMoD1Dk.
 
 ## **🛠️ Arichitecture System**
 
-![architecture](img_readme/architecture.png)
+![architecture](img/system_architecture.jpg)
 
 The system development process is divided into five main phases
 ### 1. System Architecture Overview
