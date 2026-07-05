@@ -1,0 +1,14 @@
+# ======================
+# IGNORE DATABASE
+# ======================
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.bson
+*.ini
+
+# ======================
+# IGNORE DATA FOLDERS
+# ======================
+dataset
