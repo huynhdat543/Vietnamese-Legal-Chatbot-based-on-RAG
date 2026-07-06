@@ -1,0 +1,6 @@
+qdrant-client==1.18.0
+pyvi==0.1.1
+rank-bm25==0.2.2
+transformers==4.57.3
+accelerate==1.12.0
+sentence-transformers==5.1.0
