@@ -1,6 +1,6 @@
 # **⚖️ Vietnamese Legal Retrieval System: Advanced Agentic RAG**
 ## **📝 Introduction**
-This project focuses on researching and developing an automated question-answering system specifically for Vietnamese legal documents. By applying advanced Augmented Access (RAG) techniques combined with fine-tuning specialized language models, the system solves the problem of accurately retrieving information in documents with complex structures and specialized terminology.
+This project presents a Vietnamese Legal Question Answering System based on a Retrieval-Augmented Generation (RAG) architecture. The system combines Query Rewrite, Hybrid Retrieval, Reciprocal Rank Fusion (RRF), and fine-tuned Embedding & Reranking models to retrieve relevant legal documents and generate accurate, evidence-based answers. The knowledge base is built from official Vietnamese legal documents, providing reliable support for legal information retrieval and question answering.
 
 **Executing member**
 - Huỳnh Phát Đạt - ISE-UIT
@@ -11,98 +11,88 @@ This project focuses on researching and developing an automated question-answeri
 Link : https://youtu.be/sArTNMoD1Dk.
 
 ## **📖 Data**
-- [ViNLI_Zalo](https://huggingface.co/datasets/anti-ai/ViNLI-Zalo-supervised) dataset: Provides a structure including query, positive, and hard_neg. This is the primary data source for refining the Rerank model (sorting results) and the Extract/MRC model (extracting short answers).
-- [thangvip/legal-documents-splitted](https://huggingface.co/datasets/thangvip/legal-documents-splitted) dataset: A collection of pre-processed and chunked legal documents (laws, decrees, circulars). This source is used to refine the Embedding model, enhancing the ability to represent legal semantics.
-- [The National Database of Legal Documents (vbpl.vn)](https://vbpl.vn/pages/portal.aspx): Official documents are collected and standardized to build a Knowledge Base. This is the original data platform that directly serves the system's retrieval process.
+
+- **Knowledge Base:** A collection of **72 official Vietnamese legal documents** (Laws, Codes, and Decrees) collected from **"Thư Viện Pháp Luật"**, processed using hierarchical chunking and indexed for Hybrid Retrieval.
+
+- **Fine-tuning Datasets:** The Embedding and Reranking models are fine-tuned using multiple Vietnamese legal resources and datasets, including [The National Database of Legal Documents (vbpl.vn)](https://vbpl.vn/pages/portal.aspx), [anti-ai/ViNLI-Zalo-supervised](https://huggingface.co/datasets/anti-ai/ViNLI-Zalo-supervised), [phamson02/large-vi-legal-queries](https://huggingface.co/datasets/phamson02/large-vi-legal-queries), [thangvip/legal-documents-splitted](https://huggingface.co/datasets/thangvip/legal-documents-splitted), and VLQA.
+
+- **Evaluation Datasets:** Two ground-truth datasets are constructed for evaluation: a legal question-answering dataset with over **600** manually annotated samples used for the system's knowledge base, and a multiple-choice dataset containing **3,025** legal questions collected from various sources on the internet.
 
 ## **🛠️ Arichitecture System**
 
 ![architecture](img/system_architecture.jpg)
 
-The system development process is divided into five main phases
-### 1. System Architecture Overview
-- The system architecture is designed using a multi-tiered processing workflow to optimize retrieval and ensure accurate legal information responses.
-- The system operates based on two main flows: a data preparation flow for building the knowledge base and a user query processing flow.
-- The process is a flexible combination of large language models (LLM), embedding models, ranking models, and extraction models, all refined to ensure the output closely matches current legal texts.
+The proposed system consists of five main stages:
 
-### 2. Data Preparation and Knowledge Base Construction Phase
-- Collecting legal texts from official sources (such as vbpl.vn), then converting them to .docx format to extract raw content.
-- Semantic Chunking is applied based on rules rather than fixed-length segments to ensure content continuity.
-- Each text segment is assigned supplementary metadata for later data filtering purposes.
-- Data is encoded into vectors using the Embedding Model (BKAI) and stored in a vector database (Chroma) ready for querying.
+### 1. Knowledge Base Construction
+- Collect and preprocess official Vietnamese legal documents.
+- Apply hierarchical chunking to preserve the legal document structure.
+- Build a Hybrid Retrieval index using Dense vectors (Qdrant) and BM25.
 
-### 3. Query Processing and Extension Process
-- Upon receiving a query from the user, the system does not immediately search but optimizes the query using the Gemini model.
-- Query Rewrite is used to create equivalent query versions, expanding the semantic search space.
-- Extended queries are encoded using the same Embedding Model (BKAI) to ensure consistency between the query and the data warehouse.
-- Perform semantic search to gather a list of the 100 most potentially relevant documents from the vector database.
+### 2. Query Processing
+- Rewrite the user's query using **Qwen2.5-3B-Instruct** to generate semantically equivalent queries to broaden the search scope within the vector database.
+- Encode all rewritten queries using the fine-tuned Embedding model.
 
-### 4. Information Retrieval, Ranking, and Extraction Mechanism
-- Apply the Reciprocal Rank Fusion (RRF) algorithm to filter from the initial 100 documents down to the 50 most relevant documents.
-- Use a refined Model Rerank to further evaluate semantic correlations, further narrowing down to the 10 highest-quality documents.
-- Use an Extract Model based on the BERT architecture to scan these documents and extract the most essential information segments.
-- This extraction process completely removes irrelevant and redundant components, optimizing the input context for the final generation step.
+### 3. Hybrid Retrieval
+- Retrieve candidate documents using both Dense Search and BM25.
+- Merge retrieval results with **Reciprocal Rank Fusion (RRF)** to improve recall.
 
-### 5. Synthesizing and Generating Answers
-- The refined extracted content, along with the user's original question, is fed into the large Gemini language model.
-- The Gemini model synthesizes and interprets the disparate pieces of information into a complete, natural, and legally accurate answer.
-- This multi-layered process helps the system provide well-founded answers while optimizing operating costs by minimizing unnecessary contextual tokens.
+### 4. Reranking
+- Re-rank retrieved documents using fine-tuned Cross-Encoder Reranker models.
+- Fuse reranking scores with RRF and select the top relevant legal passages.
 
-## **📊 Experiment**
-### 1. Embedding Model Refinement
-- Objective: Enhance the accuracy of embeddings for the Vietnamese legal domain.
-- Data Preparation: Using the anti-ai/ViNLI-Zalo-supervised dataset, has a triplet include question, positive, hard_neg
-- Setup: Architecture: Bi-encoder based on intfloat/multilingual-e5-base
-- Results: Achieved results on Zalo-Legal-Final-Check datasets with NDCG@10: 0,6106 and MRR@10: 0.5499
+### 5. Answer Generation
+- Generate the final response using **Qwen2.5-3B-Instruct** based on the retrieved legal evidence.
+- Produce concise, accurate, and legally grounded answers.
 
-### 2. Rerank Model Refinement
-- Objective: Improve accuracy by clearly distinguishing between text that matches and does not match the query.
-- Data Preparation: Using the anti-ai/ViNLI-Zalo-supervised dataset, convert it into pairs (query, document) with binary labels: label 1 (Positive) and label 0 (Hard Negative).
-- Setup: Architecture: Cross-Encoder based on the gte-multilingual-reranker-base model.
-- Mechanism: Uses the [CLS] token to converge information on sentence pair interactions, optimized using the Binary Cross-Entropy Loss function.
-- Results: Outstanding performance with Accuracy and F1-Score of ~99.91%, Recall reaching 100%.
-- It surpasses powerful pre-trained models like bge-reranker-v2-m3 (92.95%) and jina-reranker-v2-base (87.49%).
+## **📊 Experiments**
 
-### 3. Extract Model Refinement
-- Objective: To determine the start and end positions of answers in legal texts.
-- Data Preparation: From the ViNLI_Zalo dataset, the team used Gemini to generate questions and corresponding answers from legal text contexts.
-- The result is a standard MRC dataset with 3 components: Context - Question - Answer.
-- Problem Setup: Extractive Question Answering based on a bert-base-multilingual-cased model.
-- Results: 73.09% Exact Match (EM) (perfect match rate with sample answers), F1-Score: 82.39% (good ability to find overlapping information areas).
+Our system is evaluated at both the model and system levels to measure the effectiveness of each component in the RAG pipeline.
 
-### 4. Overall System Evaluation
-- Objective: To evaluate the impact of each module (Query Rewrite, Reranker, Extract) on response quality and system performance through testing various configurations.
-- Evaluation Metrics:
-    - ROUGE-L: Textual similarity
-    - Semantic: Legal semantic cosine similarity.
-    - Token Input: Measures system operating costs.
+### 1. Embedding Model
+- Fine-tuned on [intfloat/multilingual-e5-base](https://huggingface.co/intfloat/multilingual-e5-base) model (Bi-Encoder) and Vietnamese legal datasets to improve semantic representation of legal queries and documents.
+- Evaluated using retrieval metrics such as **NDCG@10**, **Recall@10**, and **MRR**.
 
+### 2. Reranking Model
+- Fine-tuned on [Alibaba-NLP/gte-multilingual-reranker-base](https://huggingface.co/Alibaba-NLP/gte-multilingual-reranker-base) model (Cross-Encoder) are used to re-rank retrieved candidates based on semantic relevance.
+- The model is evaluated using classification metrics, including **Accuracy**, **Precision**, **Recall**, and **F1-score**.
 
-**🏁 Result**
+### 3. End-to-End RAG System
+- The complete RAG pipeline is evaluated on three tasks:
+  - **Legal document retrieval**
+  - **Legal multiple-choice reasoning**
+  - **Legal answer generation**
+- The evaluation uses two manually constructed ground-truth datasets consisting of legal QA pairs and multiple-choice questions.
 
-| Method                                  | ROUGE-L | Semantic | Average Input Token on 10 Queries |
-|-----------------------------------------|:-------:|:--------:|:----------------------------------:|
-| Baseline                                | 0.4332  | 0.6807   | 158111 |
-| Baseline + Rewrite                      | **0.4499** | 0.6632   | 78347  |
-| Baseline + Rewrite + Rerank             | 0.4416  | **0.7232** | 19362  |
-| Baseline + Rewrite + Rerank + Extract   | 0.3914  | 0.6748   | 919    |
+## **🏁 Results**
 
-- Effectiveness of Rerank model: The Baseline + Rewrite + Rerank configuration achieved the highest Semantic score (0.7232). This demonstrates that the Rerank model has been fine-tuned to effectively filter noise, prioritizing semantics over purely lexical matching, resulting in answers that are more relevant to legal practice.
-- Rewrite's Role: This module helped ROUGE-L achieve the highest score (0.4499) thanks to its ability to clarify user intent. When combined with Rerank, the system prioritizes understanding meaning over just matching words.
-- Cost Optimization (Input Tokens):
-    - Reranker: Reduced the number of tokens input from 158,111 to **19,362** (saving approximately **75%**) while still improving response quality.
-    - Extract: Reduced the number of tokens to a minimum (**919** tokens). However, the Semantic score decreased slightly (to 0.6748) due to the loss of some important context.
+The experimental results demonstrate that the proposed RAG architecture achieves strong performance across all evaluation tasks.
+
+| **Task** | **Metric** | **Score** |
+|:----------------------------|:------------------:|:---------:|
+| Retrieval | NDCG@10 | **0.7904** |
+| Retrieval | Recall@10 | **0.8725** |
+| Multiple-choice Reasoning | F1-score | **≈ 0.58** |
+| Answer Generation | Cosine Similarity | **≈ 0.73** |
+| Answer Generation | BERTScore F1 | **≈ 0.73** |
+
+### Highlights
+- Fine-tuning significantly improves the retrieval performance of the Embedding and Reranking models for Vietnamese legal documents.
+- Hybrid Retrieval combined with Rewrite and Rerank module provides high retrieval accuracy while maintaining good coverage.
+- The proposed RAG system effectively retrieves relevant legal evidence and generates accurate, legally grounded responses with strong semantic similarity to reference answers.
 
 
-## 🚀 Conclusion & Future works
-### 1. Conclusion
-The team successfully developed a legal chatbot system based on an advanced RAG architecture, flexibly combining Rerank and Extract models. The results achieved include:
-- Optimized performance and accuracy: Integrating the Rerank module refines retrieved text, ensuring only the most valuable legal grounds are included in the model generation, thereby improving the accuracy of responses.
-- Resource and cost savings: Using a specialized Extract model minimizes the amount of data sent to the LLM (Gemini). This optimizes operational costs (API calls) and reduces system latency.
-- High practicality: Effectively leveraging official data sources combined with Semantic Chunking techniques helps maintain the semantic integrity of complex legal provisions in practice.
+## **🚀 Conclusion & Future works**
 
-### 2. Future works
-- Optimized Vector Database: Research applying Matryoshka Representation Learning (MRL) techniques to flexibly adjust vector embedding size. This speeds up data retrieval across extremely large datasets while maintaining system performance.
-- Expanded Knowledge Base: Integrating additional supporting document types such as case law, administrative decisions, and legal implementation guidelines. This expansion allows the chatbot to provide more comprehensive and in-depth legal advice.
-- Enhanced User Experience and Reliability: Developing a feature to suggest relevant questions and directly display evidence (excerpts of specific clauses) on the interface. This improvement increases the transparency and reliability of the legal information provided.
-- Utilizing Large-Scale Language Models: The focus on optimizing and utilizing modern large-scale language models such as Llama, Qwen, Mistral, etc., instead of the current Gemini, will further optimize system costs.
+### **Conclusion**
+
+This project presents a Vietnamese Legal Question Answering System based on an advanced RAG architecture. By combining Query Rewrite, Hybrid Retrieval, Reciprocal Rank Fusion (RRF), and fine-tuned Embedding and Reranking models, the system effectively retrieves relevant legal documents and generates accurate, evidence-based responses.
+
+Experimental results demonstrate that the proposed approach achieves strong performance in legal document retrieval, multiple-choice reasoning, and answer generation, showing its potential for real-world legal information retrieval applications.
+
+### **Future Works**
+
+- Expand the knowledge base with additional legal resources such as case law, administrative decisions, and legal guidance documents.
+- Improve retrieval efficiency by exploring advanced vector indexing and retrieval optimization techniques.
+- Fine-tune larger open-source LLMs to further improve answer quality while maintaining low deployment costs.
+- Enhance the user experience by providing legal evidence, source citations, and interactive explanations for generated answers.
