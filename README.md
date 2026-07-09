@@ -23,7 +23,6 @@ Link : https://youtu.be/sArTNMoD1Dk.
 - **Evaluation Datasets:** Two ground-truth datasets are constructed for evaluation: a legal question-answering dataset with over **600** manually annotated samples used for the system's knowledge base, and a multiple-choice dataset containing **3,025** legal questions collected from various sources on the internet.
 
 ## **🛠️ Arichitecture System**
-
 ![architecture](img/system_architecture.jpg)
 
 The proposed system consists of five main stages:
