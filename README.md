@@ -1,6 +1,10 @@
 # **⚖️ Vietnamese Legal Retrieval System: Advanced Agentic RAG**
 ## **📝 Introduction**
-This project presents a Vietnamese Legal Question Answering System based on a Retrieval-Augmented Generation (RAG) architecture. The system combines Query Rewrite, Hybrid Retrieval, Reciprocal Rank Fusion (RRF), and fine-tuned Embedding & Reranking models to retrieve relevant legal documents and generate accurate, evidence-based answers. The knowledge base is built from official Vietnamese legal documents, providing reliable support for legal information retrieval and question answering.
+This project presents a Vietnamese Legal Question Answering System based on a Retrieval-Augmented Generation (RAG) architecture to address the hallucinations, misinformation, or outdated knowledge of Vietnamese law presented by popular GenAIs such as ChatGPT, Gemini, etc. The system combines Query Rewrite, Hybrid Retrieval, Reciprocal Rank Fusion (RRF), and fine-tuned Embedding & Reranking models to retrieve relevant legal documents and generate accurate, evidence-based answers. The knowledge base is built from official Vietnamese legal documents, providing reliable support for legal information retrieval and question answering.
+
+This is an example of ChatGPT providing misleading information about Vietnamese law:
+![misleading](img/hallucination_sample.PNG)
+
 
 **Executing member**
 - Huỳnh Phát Đạt - ISE-UIT
